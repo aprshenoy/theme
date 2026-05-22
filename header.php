@@ -3,7 +3,7 @@
 <head>
   <meta charset="<?php bloginfo('charset'); ?>">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#1B2E45">
+  <meta name="theme-color" content="#0F1E33">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <?php wp_head(); ?>
@@ -28,16 +28,28 @@
         <?php echo esc_html(ucfirst(get_option('aivartha_script','Economic'))); ?> Edition
       </span>
     </div>
-    <div class="topbar-social">
-      <a href="#" aria-label="Facebook"><?php echo aiv_icon('i-fb'); ?></a>
-      <a href="#" aria-label="Twitter"><?php echo aiv_icon('i-tw'); ?></a>
-      <a href="#" aria-label="WhatsApp"><?php echo aiv_icon('i-wa'); ?></a>
-      <a href="<?php bloginfo('rss2_url'); ?>" aria-label="RSS"><?php echo aiv_icon('i-rss'); ?></a>
+    <div class="topbar-right">
+      <div class="topbar-langs">
+        <?php
+        $current = get_option('aivartha_script', 'latin');
+        $langs   = ['latin'=>'EN','malayalam'=>'ML','hindi'=>'HI','telugu'=>'TE'];
+        foreach ($langs as $k => $label):
+        ?>
+          <a class="lang-pill <?php echo $k === $current ? 'active' : ''; ?>"
+             href="<?php echo esc_url(add_query_arg('aiv_lang', $k)); ?>"><?php echo $label; ?></a>
+        <?php endforeach; ?>
+      </div>
+      <div class="topbar-social">
+        <a href="#" aria-label="Facebook"><?php echo aiv_icon('i-fb'); ?></a>
+        <a href="#" aria-label="Twitter"><?php echo aiv_icon('i-tw'); ?></a>
+        <a href="#" aria-label="WhatsApp"><?php echo aiv_icon('i-wa'); ?></a>
+        <a href="<?php bloginfo('rss2_url'); ?>" aria-label="RSS"><?php echo aiv_icon('i-rss'); ?></a>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- ▸ MARKET STRIP -->
+<!-- ▸ MARKET TICKER -->
 <div class="market-strip" aria-label="Live market data" role="region">
   <div class="market-label">
     <?php echo aiv_icon('i-trend-up'); ?> Markets
@@ -74,7 +86,7 @@
         </svg>
         <span class="logo-text">
           <span class="logo-name">AI&nbsp;<em>Vartha</em></span>
-          <span class="logo-sub"><?php bloginfo('description') ?: print('Economic Intelligence'); ?></span>
+          <span class="logo-sub"><?php echo esc_html(get_bloginfo('description') ?: 'Economic Intelligence'); ?></span>
         </span>
       </a>
 
@@ -84,11 +96,24 @@
           'menu_class'     => 'nav-list',
           'container'      => false,
           'fallback_cb'    => function() {
-            $cats = get_categories(['number' => 7, 'hide_empty' => true]);
+            // Default sections — including the new Technology + Foreign Policy
+            $defaults = [
+                'home'           => ['label'=>'Home',           'url'=>home_url('/')],
+                'markets'        => ['label'=>'Markets',        'url'=>get_category_link(get_cat_ID('Markets'))],
+                'policy'         => ['label'=>'Policy',         'url'=>get_category_link(get_cat_ID('Policy'))],
+                'banking'        => ['label'=>'Banking',        'url'=>get_category_link(get_cat_ID('Banking'))],
+                'economy'        => ['label'=>'Economy',        'url'=>get_category_link(get_cat_ID('Economy'))],
+                'global'         => ['label'=>'Global',         'url'=>get_category_link(get_cat_ID('Global'))],
+                'foreign-policy' => ['label'=>'Foreign Policy', 'url'=>get_category_link(get_cat_ID('Foreign Policy'))],
+                'technology'     => ['label'=>'Technology',     'url'=>get_category_link(get_cat_ID('Technology'))],
+                'opinion'        => ['label'=>'Opinion',        'url'=>get_category_link(get_cat_ID('Opinion'))],
+            ];
             echo '<ul class="nav-list">';
-            echo '<li><a href="'.esc_url(home_url('/')).'">Home</a></li>';
-            foreach ($cats as $c)
-              echo '<li><a href="'.esc_url(get_category_link($c->term_id)).'">'.esc_html($c->name).'</a></li>';
+            foreach ($defaults as $slug => $item) {
+                $url    = $item['url'] ?: home_url('/category/' . $slug);
+                $active = (is_home() && $slug === 'home') || (is_category($slug));
+                echo '<li><a href="' . esc_url($url) . '"' . ($active ? ' class="is-active"' : '') . '>' . esc_html($item['label']) . '</a></li>';
+            }
             echo '</ul>';
           },
         ]); ?>
@@ -98,6 +123,9 @@
         <button class="icon-btn" id="search-btn" aria-label="Search" aria-expanded="false">
           <?php echo aiv_icon('search'); ?>
         </button>
+        <a class="btn-subscribe" href="<?php echo esc_url(home_url('/subscribe')); ?>">
+          <?php echo aiv_icon('i-star'); ?> Subscribe
+        </a>
         <button class="icon-btn hamburger" id="hamburger" aria-label="Menu" aria-expanded="false" aria-controls="primary-nav">
           <?php echo aiv_icon('menu'); ?>
         </button>
@@ -110,12 +138,10 @@
 <!-- ▸ BREAKING TICKER -->
 <?php $bp = aiv_breaking(); if ($bp): ?>
 <div class="breaking-bar" aria-label="Breaking news" role="region">
-  <div class="breaking-pill">
-    <?php echo aiv_icon('bolt'); ?> Breaking
-  </div>
+  <div class="breaking-pill"><?php echo aiv_icon('bolt'); ?> Breaking</div>
   <div class="breaking-scroll">
     <div class="breaking-inner">
-      <?php foreach (array_merge($bp,$bp) as $b): ?>
+      <?php foreach (array_merge($bp, $bp) as $b): ?>
       <div class="b-item">
         <a href="<?php echo esc_url(get_permalink($b->ID)); ?>">
           <?php echo esc_html(get_the_title($b->ID)); ?>
@@ -127,6 +153,9 @@
 </div>
 <?php endif; ?>
 
+<!-- ▸ DATELINE STRIP (broadsheet vol. + edition + indices) -->
+<?php if (is_home() || is_front_page()): get_template_part('template-parts/dateline'); endif; ?>
+
 <!-- ▸ SEARCH OVERLAY -->
 <div class="search-overlay" id="search-overlay" role="dialog" aria-modal="true" aria-label="Search">
   <div class="search-box">
@@ -137,5 +166,5 @@
   </div>
 </div>
 
-<div class="site-body">
+<main class="site-body">
   <div class="wrap">

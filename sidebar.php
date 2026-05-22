@@ -106,6 +106,9 @@
       </div>
     </section>
 
+    <!-- Skyscraper ad (only renders if widget area populated) -->
+    <?php get_template_part('template-parts/ads/skyscraper'); ?>
+
   <?php endif; ?>
 
 </aside>
