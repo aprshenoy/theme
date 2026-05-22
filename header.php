@@ -31,14 +31,10 @@
     <div class="topbar-right">
       <div class="topbar-langs">
         <?php
-        $current = get_option('aivartha_script', 'latin');
-        $langs   = ['latin'=>'EN','malayalam'=>'ML','hindi'=>'HI','telugu'=>'TE'];
-        foreach ($langs as $k => $label):
-        ?>
-          <a class="lang-pill <?php echo $k === $current ? 'active' : ''; ?>"
-             href="<?php echo esc_url(add_query_arg('aiv_lang', $k)); ?>"><?php echo $label; ?></a>
-        <?php endforeach; ?>
-      </div>
+        $script = get_option('aivartha_script', 'latin');
+        $labels = ['latin'=>'English','malayalam'=>'മലയാളം','hindi'=>'हिन्दी','telugu'=>'తెలుగు'];
+        echo '<span class="lang-pill active">' . esc_html($labels[$script] ?? 'English') . '</span>';
+        ?></div>
       <div class="topbar-social">
         <a href="#" aria-label="Facebook"><?php echo aiv_icon('i-fb'); ?></a>
         <a href="#" aria-label="Twitter"><?php echo aiv_icon('i-tw'); ?></a>
