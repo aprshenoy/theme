@@ -2343,6 +2343,80 @@ figure { margin: 0; }
 .three-col-with-ad .three-col-stack { display: flex; flex-direction: column; gap: 22px; }
 
 /* ──────────────────────────────────────────────────────────────────────
+   ▸ SEARCH OVERLAY
+   ──────────────────────────────────────────────────────────────────── */
+.search-overlay {
+  position: fixed; inset: 0; z-index: 9000;
+  background: rgba(15,30,51,.88);
+  backdrop-filter: blur(6px);
+  display: flex; align-items: flex-start; justify-content: center;
+  padding-top: 140px;
+  opacity: 0; visibility: hidden;
+  transition: opacity .2s ease, visibility .2s;
+}
+.search-overlay.search-open { opacity: 1; visibility: visible; }
+.search-box {
+  width: 100%; max-width: 640px;
+  background: var(--surface);
+  border: 1px solid var(--border-2);
+  border-radius: var(--r-md);
+  box-shadow: 0 24px 64px rgba(0,0,0,.4);
+  overflow: hidden;
+}
+.search-box form {
+  display: flex; align-items: center;
+}
+.search-box input[type="search"] {
+  flex: 1; border: none; background: transparent;
+  font-size: 18px; font-family: var(--font-sans);
+  color: var(--fg); padding: 18px 20px;
+  outline: none;
+}
+.search-box input[type="search"]::placeholder { color: var(--fg-muted); }
+.search-box button[type="submit"] {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 12px 20px; background: var(--amber);
+  color: var(--navy); font-weight: 700; font-size: 13px;
+  border-radius: 0; white-space: nowrap;
+  margin: 6px 6px 6px 0;
+  border-radius: var(--r-sm);
+}
+.search-box button[type="submit"] svg { width: 14px; height: 14px; }
+
+/* Prevent page scroll when overlay is open */
+body.search-is-open { overflow: hidden; }
+
+/* ──────────────────────────────────────────────────────────────────────
+   ▸ SIDEBAR WIDGETS (custom styled)
+   ──────────────────────────────────────────────────────────────────── */
+.widget { margin-bottom: 32px; }
+.widget-hd {
+  font-size: 10px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--fg-3); padding-bottom: 10px;
+  border-bottom: 2px solid var(--navy);
+  margin-bottom: 14px;
+}
+.widget-body { font-size: 13.5px; }
+.widget-body ul { list-style: none; margin: 0; padding: 0; }
+.widget-body ul li {
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+  line-height: 1.45;
+}
+.widget-body ul li:last-child { border-bottom: none; }
+.widget-body ul li a { color: var(--fg); transition: color var(--t-fast); }
+.widget-body ul li a:hover { color: var(--amber-3); }
+
+/* Hide WordPress default block widget junk */
+.widget .wp-block-group h2 {
+  font-size: 10px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--fg-3); padding-bottom: 10px;
+  border-bottom: 2px solid var(--navy);
+  margin-bottom: 14px;
+}
+.widget .wp-block-search { display: none; } /* Hide WP block search widget — theme has its own */
+
+/* ──────────────────────────────────────────────────────────────────────
    ▸ RESPONSIVE
    ──────────────────────────────────────────────────────────────────── */
 @media (max-width: 1100px) {
